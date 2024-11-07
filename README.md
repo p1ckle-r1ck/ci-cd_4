@@ -26,8 +26,31 @@
 
 ---
 
-### Как оформить решение задания
+## 1
+1. Создать два VM: для jenkins-master и jenkins-agent.
+2. Установить Jenkins при помощи playbook.
+3. Запустить и проверить работоспособность.
+4. Сделать первоначальную настройку.
 
-Выполненное домашнее задание пришлите в виде ссылки на .md-файл в вашем репозитории.
+    ![alt text](1.png)
 
----
+    ![alt text](2.png)
+
+
+
+
+## 2
+1. Сделать Freestyle Job, который будет запускать `molecule test` из любого вашего репозитория с ролью.
+
+    ![alt text](3.png)
+    ![alt text](4.png)
+    ![alt text](5.png)
+
+2. Сделать Declarative Pipeline Job, который будет запускать `molecule test` из любого вашего репозитория с ролью.
+   
+    ![alt text](6.png)
+    ![alt text](7.png)
+    ![alt text](8.png)
+
+3. Перенести Declarative Pipeline в репозиторий в файл `Jenkinsfile`.
+
