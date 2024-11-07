@@ -7,7 +7,7 @@ node("linux"){
 
 
     stage("Git checkout"){
-        git credentialsId: '73cdb44d-d607-4430-9144-a27aa1799cbc', url: 'https://github.com/aragastmatb/example-playbook.git'
+        git credentialsId: 'creds', url: 'https://github.com/aragastmatb/example-playbook.git'
     }
 
     stage("Run playbook"){
