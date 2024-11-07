@@ -1,0 +1,23 @@
+node("linux"){
+    
+    parameters {
+        booleanParam(name: 'prod_run', defaultValue: false, description: 'Запуск без флагов --check и --diff')
+    }
+
+
+
+    stage("Git checkout"){
+        git credentialsId: '73cdb44d-d607-4430-9144-a27aa1799cbc', url: 'https://github.com/aragastmatb/example-playbook.git'
+    }
+
+    stage("Run playbook"){
+        if (params.prod_run){
+            sh 'ansible-playbook site.yml -i inventory/prod.yml'
+
+        }
+        else{
+            sh 'ansible-playbook site.yml -i inventory/prod.yml --check --diff'
+        }
+        
+    }
+}

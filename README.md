@@ -32,9 +32,9 @@
 3. Запустить и проверить работоспособность.
 4. Сделать первоначальную настройку.
 
-    ![alt text](1.png)
+   ![alt text ](screen/1.png)
 
-    ![alt text](2.png)
+    ![alt text](screen/2.png)
 
 
 
@@ -42,15 +42,29 @@
 ## 2
 1. Сделать Freestyle Job, который будет запускать `molecule test` из любого вашего репозитория с ролью.
 
-    ![alt text](3.png)
-    ![alt text](4.png)
-    ![alt text](5.png)
+    ![alt text](screen/3.png)
+    ![alt text](screen/4.png)
+    ![alt text](screen/5.png)
 
 2. Сделать Declarative Pipeline Job, который будет запускать `molecule test` из любого вашего репозитория с ролью.
    
-    ![alt text](6.png)
-    ![alt text](7.png)
-    ![alt text](8.png)
+    ![alt text](screen/6.png)
+    ![alt text](screen/7.png)
+    ![alt text](screen/8.png)
 
 3. Перенести Declarative Pipeline в репозиторий в файл `Jenkinsfile`.
 
+    ## [Jenkinsfile](Jenkinsfile)
+4. Создать Multibranch Pipeline на запуск `Jenkinsfile` из репозитория.
+
+    ![alt text](screen/9.png)
+    ![alt text](screen/10.png)
+
+5. Создать Scripted Pipeline, наполнить его скриптом из [pipeline](./pipeline).
+6. Внести необходимые изменения, чтобы Pipeline запускал `ansible-playbook` без флагов `--check --diff`, если не установлен параметр при запуске джобы (prod_run = True). По умолчанию параметр имеет значение False и запускает прогон с флагами `--check --diff`.
+7. Проверить работоспособность, исправить ошибки, исправленный Pipeline вложить в репозиторий в файл `ScriptedJenkinsfile`.
+
+![alt text](screen/11.png)
+![alt text](screen/12.png)
+
+[text](Jenkinsfile)
