@@ -34,19 +34,25 @@
         key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
         state: present
         validate_certs: false
-    - name: Install epel-release
-      become: true
-      yum:
-        name: epel-release
-        state: present
+
+    # - name: Install epel-release
+    #   become: true
+    #   yum:
+    #     name: epel-release
+    #     state: present
+
+
+
     - name: Install Jenkins and requirements
       become: true
       yum:
         name:
           - jenkins
           - git
+          - acl
         state: present
       register: jenkins_installed
+
     - name: Ensure jenkins agents are present in known_hosts file
       become: true
       become_user: "{{ jenkins_user_name }}"
@@ -54,25 +60,56 @@
         name: "{{ hostvars[item].ansible_host }}"
         state: present
         key: "{{ lookup('pipe', 'ssh-keyscan {{ hostvars[item].ansible_host }}') }}"
-        hash_host: true
+        hash_host: false
       with_items: "{{ groups.jenkins_agents }}"
+
+    # - name: Ensure jenkins agents are present in known_hosts file
+    #   become: true
+    #   become_user: "{{ jenkins_user_name }}"
+    #   known_hosts:
+    #     name: "{{ item }}"
+    #     state: present
+    #     key: "{{ lookup('pipe', 'ssh-keyscan ' ~ item) }}"
+    #     hash_host: false  # Временно отключите хеширование для проверки
+    #   with_items: "{{ groups.jenkins_agents }}"
+    - name: reload daemon
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+
     - name: Start Jenkins
       become: true
       systemd:
         name: jenkins
         state: restarted
         enabled: true
-      when: jenkins_installed is changed
+      # when: jenkins_installed is changed
+
 - name: Prepare jenkins agent
-  hosts: jenkins_agents
+  hosts: jenkins-agent-01
+  become: true
+  tasks:
+
+    - name: install acl packages
+      yum:
+        name:
+          - acl
+          - pip
+        state: present
+
+- name: Prepare jenkins agent
+  hosts: jenkins-agent-01
   become: true
   become_user: "{{ jenkins_user_name }}"
   tasks:
+
     - name: Add master publickey into authorized_key
+      become_user: root
       authorized_key:
         user: "{{ jenkins_user_name }}"
         state: present
         key: "{{ hostvars['jenkins-master-01']['ssh_key_info']['ssh_public_key'] }}"
+
     - name: Create agent_dir
       become_user: root
       file:
@@ -80,6 +117,7 @@
         state: directory
         owner: "{{ jenkins_user_name }}"
         group: "{{ jenkins_user_group }}"
+
     - name: Add docker repo
       become_user: root
       get_url:
@@ -92,9 +130,10 @@
         name:
           - git
           - python3
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
+          - docker
+          # - docker-ce
+          # - docker-ce-cli
+          - containerd
         state: present
     - name: Update pip
       become_user: root
@@ -110,13 +149,13 @@
           - selinux
           - ansible<3.0
         state: present
-    - name: Reinstall Selinux
-      become_user: root
-      pip:
-        executable: pip3
-        name:
-          - selinux
-        state: forcereinstall
+    # - name: Reinstall Selinux
+    #   become_user: root
+    #   pip:
+    #     executable: pip3
+    #     name:
+    #       - selinux
+    #     state: forcereinstall
     - name: Add local to PATH
       lineinfile:
         dest: ~/.bashrc
